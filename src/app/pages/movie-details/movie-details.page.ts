@@ -11,6 +11,7 @@ import { Storage } from '@capacitor/storage';
 })
 export class MovieDetailsPage implements OnInit {
   information = null;
+  KEY = 'favorites';
   constructor(
     private activatedRoute: ActivatedRoute,
     private movieService: MovieService
@@ -20,17 +21,15 @@ export class MovieDetailsPage implements OnInit {
     let id = this.activatedRoute.snapshot.paramMap.get('id');
 
     this.movieService.getDetails(id).subscribe((result) => {
-      console.log('details: ', result);
       this.information = result;
     });
   }
   openWebsite() {
     window.open(this.information.Website, '_blank');
   }
-  /*async onClick(info: string) {
-    var entry = { "info": info };
-    var libraryString = (await Storage.get({ }))
-      .value;
+  async onClick(info: string) {
+    var entry = { info: info };
+    var libraryString = (await Storage.get({ key: this.KEY })).value;
 
     var library = JSON.parse(libraryString);
     if (library == null) {
@@ -41,9 +40,10 @@ export class MovieDetailsPage implements OnInit {
       libraryString = '';
     }
 
-    if (libraryString.includes(JSON.stringify(entry))) {
+    if (!libraryString.includes(JSON.stringify(entry))) {
       library.unshift(entry);
-      await Storage.set({});
+      await Storage.set({ key: this.KEY, value: JSON.stringify(library) });
     }
-  }*/
+    console.log(info);
+  }
 }
