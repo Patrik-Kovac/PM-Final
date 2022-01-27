@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-buttons slot="end" color="primary">
       <ion-icon
-        name="heart-outline"
+        [name]="this.isFav? 'heart': 'heart-outline'"
         slot="icon-only"
         (click)="onClick(information)"
       ></ion-icon>

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MovieService } from 'src/app/services/movie.service';
 import { Observable } from 'rxjs';
 import { Storage } from '@capacitor/storage';
+import { LibraryService } from 'src/app/services/library.service';
 
 @Component({
   selector: 'app-movie-details',
@@ -11,39 +12,45 @@ import { Storage } from '@capacitor/storage';
 })
 export class MovieDetailsPage implements OnInit {
   information = null;
-  KEY = 'favorites';
+  id = '';
+  isFav = false;
+  Fav: Promise<boolean>;
+  icon = 'heart-outline';
   constructor(
     private activatedRoute: ActivatedRoute,
-    private movieService: MovieService
-  ) {}
+    private movieService: MovieService,
+    public libraryService: LibraryService
+  ) {
+    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+  }
 
   ngOnInit() {
-    let id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.id = this.activatedRoute.snapshot.paramMap.get('id');
 
-    this.movieService.getDetails(id).subscribe((result) => {
+    this.movieService.getDetails(this.id).subscribe((result) => {
       this.information = result;
     });
+    this.libraryService.load(this.id);
+    this.isFav = this.libraryService.mybool;
   }
   openWebsite() {
     window.open(this.information.Website, '_blank');
   }
-  async onClick(info: string) {
-    var entry = { info: info };
-    var libraryString = (await Storage.get({ key: this.KEY })).value;
-
-    var library = JSON.parse(libraryString);
-    if (library == null) {
-      library = [];
+  onClick(info) {
+    this.isFav = !this.isFav;
+    if (this.isFav == true) {
+      this.libraryService.Clicked(info);
+    } else {
+      this.libraryService.removeItem(this.id);
     }
+    this.changeIcon();
+  }
 
-    if (libraryString == null) {
-      libraryString = '';
+  changeIcon() {
+    if (this.isFav == true) {
+      this.icon = 'heart';
+    } else {
+      this.icon = 'heart-outline';
     }
-
-    if (!libraryString.includes(JSON.stringify(entry))) {
-      library.unshift(entry);
-      await Storage.set({ key: this.KEY, value: JSON.stringify(library) });
-    }
-    console.log(info);
   }
 }

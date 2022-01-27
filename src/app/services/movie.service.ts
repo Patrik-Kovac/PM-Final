@@ -14,7 +14,7 @@ export enum SearchType {
   providedIn: 'root',
 })
 export class MovieService {
-  url = 'http://www.omdbapi.com';
+  url = 'https://www.omdbapi.com';
   apiKey = '4d71b67f';
   constructor(private http: HttpClient) {}
 
@@ -34,5 +34,4 @@ export class MovieService {
   getDetails(id) {
     return this.http.get(`${this.url}?i=${id}&plot=full&apikey=${this.apiKey}`);
   }
-  
 }

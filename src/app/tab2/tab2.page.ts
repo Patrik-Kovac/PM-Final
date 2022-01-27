@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage } from '@capacitor/storage';
+import { LibraryService } from '../services/library.service';
 
 @Component({
   selector: 'app-tab2',
@@ -7,17 +8,10 @@ import { Storage } from '@capacitor/storage';
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page {
-  KEY = 'favorites';
-  myLibrary: Array<any> = [];
-  constructor() {}
-  async ionViewWillEnter() {
-    this.loadLibrary();
+  constructor(public libraryService: LibraryService) {
+    libraryService.loadLibrary();
   }
-  private async loadLibrary() {
-    const { value } = await Storage.get({
-      key: this.KEY,
-    });
-
-    this.myLibrary = JSON.parse(value);
+  ionViewWillEnter() {
+    this.libraryService.loadLibrary();
   }
 }
